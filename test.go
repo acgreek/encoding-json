@@ -3,15 +3,39 @@ package main
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/acgreek/gostructtags/encoding/json"
 )
 
 type Nested struct {
-	N string
+	N             string `json:"n"`
+	Num           int
+	UnsignedNum   uint
+	Num32         int32
+	UnsignedNum32 uint32
+	Num64         int64
+	UnsignedNum64 uint64
+	Float32       float32
+	Float64       float64
+	Bool          bool
+	link          *Nested
+	ExportLink    *Nested
+
+	PtrN             *string `json:"n"`
+	PtrNum           *int
+	PtrUnsignedNum   *uint
+	PtrNum32         *int32
+	PtrUnsignedNum32 *uint32
+	PtrNum64         *int64 `json:"ptr_num64",omitempty`
+	PtrUnsignedNum64 *uint64
+	PtrFloat32       *float32
+	PtrFloat64       *float64
+	PtrBool          *bool
 }
 
 type TestStruct struct {
-	Name string `require not empty`
-	N    Nested
+	Name string `json:"name",omitempty`
+	N    Nested `json:"n"`
 }
 
 func main() {
@@ -26,6 +50,8 @@ func main() {
 	displayStruct(nil, 0, t, v)
 	f, _ := t.FieldByName("Name")
 	fmt.Printf("foo struct: %v is type %v %s\n", foo, t, f.Tag)
+	output, err := json.Encode(foo)
+	fmt.Printf("json=%s err=%s\n", output, err)
 }
 
 func displayStruct(stack []int, depth int, t reflect.Type, v reflect.Value) {
